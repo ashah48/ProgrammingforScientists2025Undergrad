@@ -39,7 +39,7 @@ CountLiveNeighbors(currentBoard, r, c)
                     count ← count + 1
     return count
 
-    
+
 """
 
 from datatypes import GameBoard
@@ -55,7 +55,7 @@ def count_rows(board: GameBoard) -> int:
     """
     if not isinstance(board, list):
         raise ValueError("board must be a list.")
-    
+
     return len(board)
 
 
@@ -71,9 +71,9 @@ def count_cols(board: GameBoard) -> int:
     """
     if not isinstance(board, list) or len(board) == 0:
         raise ValueError("board must be a non-empty 2D list.")
-    
+
     assert_rectangular(board)
-    
+
     return len(board[0])  # only works if board is rectangular
 
 
@@ -87,16 +87,16 @@ def assert_rectangular(board: GameBoard) -> None:
     """
     if not isinstance(board, list) or len(board) == 0:
         raise ValueError("board must be a non-empty 2D list.")
-    
+
     # how can I check if the board is not rectangular?
     # if I find that it's non rectangular, I want to raise a value error. Otherwise I take no action.
 
     first_row_length = len(board[0])
 
-    # range over remaining rows, and flip out if any has length not equal to first_row_length 
+    # range over remaining rows, and flip out if any has length not equal to first_row_length
     for row in range(1, count_rows(board)):
         if len(board[row]) != first_row_length:
-            raise ValueError("Board is not rectangular at row index " + row)
+            raise ValueError("Board is not rectangular at row index " + str(row))
 
 
 def play_game_of_life(initial_board: GameBoard, num_gens: int) -> list[GameBoard]:
@@ -112,13 +112,13 @@ def play_game_of_life(initial_board: GameBoard, num_gens: int) -> list[GameBoard
         raise ValueError("initial_board must be a non-empty GameBoard.")
     if not isinstance(num_gens, int) or num_gens < 0:
         raise ValueError("num_gens must be a non-negative integer.")
-    
+
     boards = []
     boards.append(initial_board)
     # one-liner: boards = [initial_board]
 
-    # range over number of generations and call update_board 
-    for i in range(num_gens): 
+    # range over number of generations and call update_board
+    for i in range(num_gens):
         prev_board = boards[i]
         next_board = update_board(prev_board)
         boards.append(next_board)
@@ -135,7 +135,7 @@ def update_board(current_board: GameBoard) -> GameBoard:
     """
     if not isinstance(current_board, list) or len(current_board) == 0:
         raise ValueError("current_board must be a non-empty GameBoard.")
-    
+
     assert_rectangular(current_board)
 
     num_rows = count_rows(current_board)
@@ -143,12 +143,12 @@ def update_board(current_board: GameBoard) -> GameBoard:
 
     if num_cols == 0:
         raise ValueError("Error: board should have at least one column.")
-    
-    # no funny business if we make it here 
 
-    new_board = initialize_board(num_rows, num_cols) 
+    # no funny business if we make it here
 
-    # all cells are dead at this point 
+    new_board = initialize_board(num_rows, num_cols)
+
+    # all cells are dead at this point
 
     # range over all cells of old board and update the cell of the new board
     for r in range(num_rows):
@@ -171,11 +171,11 @@ def initialize_board(num_rows: int, num_cols: int) -> GameBoard:
         raise ValueError("num_rows must be a positive integer.")
     if not isinstance(num_cols, int) or num_cols <= 0:
         raise ValueError("num_cols must be a positive integer.")
-    
-    # let's declare a blank GameBoard 
+
+    # let's declare a blank GameBoard
     board: GameBoard = []
 
-    # range over the rows and make the rows 
+    # range over the rows and make the rows
     for _ in range(num_rows):
         row = [False] * num_cols
         board.append(row)
@@ -197,14 +197,14 @@ def update_cell(board: GameBoard, r: int, c: int) -> bool:
         raise ValueError("board must be a non-empty GameBoard.")
     if not isinstance(r, int) or not isinstance(c, int):
         raise ValueError("r and c must be integers.")
-    
+
     num_live_neighbors = count_live_neighbors(board, r, c)
 
-    # apply the Game of Life rules 
+    # apply the Game of Life rules
     # is current cell alive or dead?
     if board[r][c]: # alive
         if num_live_neighbors == 2 or num_live_neighbors == 3:
-            #stayin alive 
+            #stayin alive
             return True
         else: #die
             return False
@@ -229,22 +229,22 @@ def count_live_neighbors(board: GameBoard, r: int, c: int) -> int:
     """
     if not isinstance(board, list) or len(board) == 0:
         raise ValueError("board must be a non-empty GameBoard.")
-    
+
     assert_rectangular(board)
 
     if count_cols(board) == 0:
         raise ValueError("Board must have at least one column.")
-    
+
     count = 0
 
-    # range over just the Moore neighborhood 
+    # range over just the Moore neighborhood
     # easiest way: range over 9 cells
     # row ranges from r-1 to r+1, col ranges from c-1 to c+1
     for i in range(r-1, r+2):
         for j in range(c-1, c+2):
             # 3 things should be true
             # 1. board[i][j] is in nbd and isn't (r,c)
-            # 2. (i, j) is in the boundaries of board 
+            # 2. (i, j) is in the boundaries of board
             # 3. board[i][j] is True
             # the order of these checks is critical due to "short circuiting": break an and as soon as we hit a false statement
             if ((i != r) or (j != c)) and in_field(board, i, j) and board[i][j]:
@@ -267,20 +267,20 @@ def in_field(board: GameBoard, i: int, j: int) -> bool:
         raise ValueError("board must be a non-empty GameBoard.")
     if not isinstance(i, int) or not isinstance(j, int):
         raise ValueError("i and j must be integers.")
-    
+
     num_rows = count_rows(board)
     num_cols = count_cols(board)
-    
+
     if i >= 0 and j >= 0 and i < num_rows and j < num_cols:
-        return True 
-    
-    # if we make it here, we are off the board 
+        return True
+
+    # if we make it here, we are off the board
     return False
 
     """
     # alternatively check if something is off the board and return True if not
     if i < 0 or j < 0 or i >= num_rows or j >= num_cols:
         return False
-    
+
     return True
     """
