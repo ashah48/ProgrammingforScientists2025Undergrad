@@ -2,7 +2,7 @@ from typing import List
 from PIL import Image, ImageDraw
 import matplotlib.cm as cm
 
-from .datatype import Board, Cell
+from .datatypes import Board, Cell
 
 
 def draw_boards(boards: List[Board], cell_width: int, n: int) -> List[Image.Image]:
