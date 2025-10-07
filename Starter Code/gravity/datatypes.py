@@ -71,7 +71,7 @@ class Universe:
     Represents the entire simulation environment.
     """
 
-    gravitational_constant: float = 6.674e-11  # Default; can be overridden
+    gravitational_constant: float = 6.674e-11  # Default class attribute; can be overridden
 
     def __init__(self, bodies: list[Body], width: float):
         if not isinstance(bodies, list) or not all(isinstance(b, Body) for b in bodies):
