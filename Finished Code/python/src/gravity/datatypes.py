@@ -8,17 +8,24 @@ class OrderedPair:
     """
 
     def __init__(self, x: float = 0.0, y: float = 0.0):
-        if not isinstance(x, (int, float)):
-            raise TypeError(f"x must be a number (int or float), got {type(x).__name__}")
-        if not isinstance(y, (int, float)):
-            raise TypeError(f"y must be a number (int or float), got {type(y).__name__}")
-        self.x: float = float(x)
-        self.y: float = float(y)
+        self.x: float = x
+        self.y: float = y
 
 
 class Body:
     """
     Represents a celestial body within the simulation universe.
+
+    Attributes:
+        name: The name of the body (e.g., "Earth", "Sun").
+        mass: Mass of the body.
+        radius: Radius of the body (used for drawing and collision distance).
+        position: Current position as an OrderedPair.
+        velocity: Current velocity as an OrderedPair.
+        acceleration: Current acceleration as an OrderedPair.
+        red: Red component of the display color (0–255).
+        green: Green component of the display color (0–255).
+        blue: Blue component of the display color (0–255).
     """
 
     def __init__(
@@ -33,31 +40,9 @@ class Body:
         green: int,
         blue: int
     ):
-        # Name
-        if not isinstance(name, str) or not name.strip():
-            raise ValueError("Body name must be a non-empty string.")
-
-        # Physical properties
-        if not isinstance(mass, (int, float)) or mass <= 0:
-            raise ValueError(f"Mass must be a positive number, got {mass}")
-        if not isinstance(radius, (int, float)) or radius < 0:
-            raise ValueError(f"Radius must be a non-negative number, got {radius}")
-
-        # Vectors
-        for arg, label in ((position, "position"), (velocity, "velocity"), (acceleration, "acceleration")):
-            if not isinstance(arg, OrderedPair):
-                raise TypeError(f"{label} must be an OrderedPair, got {type(arg).__name__}")
-
-        # Color
-        for c, channel in ((red, "red"), (green, "green"), (blue, "blue")):
-            if not isinstance(c, int):
-                raise TypeError(f"Color component {channel} must be int, got {type(c).__name__}")
-            if not (0 <= c <= 255):
-                raise ValueError(f"Color component {channel} must be in range [0, 255], got {c}")
-
         self.name = name
-        self.mass = float(mass)
-        self.radius = float(radius)
+        self.mass = mass
+        self.radius = radius
         self.position = position
         self.velocity = velocity
         self.acceleration = acceleration
@@ -69,15 +54,26 @@ class Body:
 class Universe:
     """
     Represents the entire simulation environment.
+
+    Attributes:
+        bodies: A list of Body objects in the universe.
+        width: The width of the simulation space (assumed square).
+        gravitational_constant (class attribute): The gravitational constant (G)
+            shared by all Universe instances.
+
+    Class Attributes:
+        gravitational_constant: float — default value can be set globally.
     """
 
     gravitational_constant: float = 6.674e-11  # Default; can be overridden
 
     def __init__(self, bodies: list[Body], width: float):
-        if not isinstance(bodies, list) or not all(isinstance(b, Body) for b in bodies):
-            raise TypeError("bodies must be a list of Body objects.")
-        if not isinstance(width, (int, float)) or width <= 0:
-            raise ValueError(f"width must be a positive number, got {width}")
+        """
+        Initialize a new Universe instance.
 
+        Args:
+            bodies: List of Body objects in the simulation.
+            width: Width of the universe (used for scaling when drawing).
+        """
         self.bodies = bodies
-        self.width = float(width)
+        self.width = width
