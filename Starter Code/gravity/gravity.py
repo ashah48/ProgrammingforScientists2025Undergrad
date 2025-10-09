@@ -55,7 +55,12 @@ def update_acceleration(current_universe: Universe, b: Body) -> OrderedPair:
     """
 
     # TODO: add code here
-    pass
+    net_force = compute_net_force(current_universe, b)
+    ax = net_force.x / b.mass
+    ay = net_force.y / b.mass
+
+    return OrderedPair(ax, ay)
+
 
 def update_velocity(b: Body, old_acceleration: OrderedPair, time: float) -> OrderedPair:
     """
@@ -66,14 +71,14 @@ def update_velocity(b: Body, old_acceleration: OrderedPair, time: float) -> Orde
 
     Args:
         b (Body): The body whose velocity is being updated. Must have
-            a `velocity` attribute (OrderedPair) and a current 
+            a `velocity` attribute (OrderedPair) and a current
             `acceleration` attribute (OrderedPair).
-        old_acceleration (OrderedPair): The acceleration of the body at 
+        old_acceleration (OrderedPair): The acceleration of the body at
             the previous time step.
         time (float): The time step Δt over which to update the velocity.
 
     Returns:
-        OrderedPair: A new OrderedPair representing the updated velocity 
+        OrderedPair: A new OrderedPair representing the updated velocity
         components (vx, vy).
     """
     # TODO: add code here
@@ -88,21 +93,24 @@ def update_position(b: Body, old_acc: OrderedPair, old_vel: OrderedPair, time: f
         p_{t+Δt} = p_t + v_t * Δt + 0.5 * a_t * Δt²
 
     Args:
-        b (Body): The body whose position is being updated. Must have 
+        b (Body): The body whose position is being updated. Must have
             a `position` attribute (OrderedPair).
-        old_acc (OrderedPair): The acceleration of the body at the previous 
+        old_acc (OrderedPair): The acceleration of the body at the previous
             time step.
-        old_vel (OrderedPair): The velocity of the body at the previous 
+        old_vel (OrderedPair): The velocity of the body at the previous
             time step.
-        time (float): The time step Δt over which to update the position. 
+        time (float): The time step Δt over which to update the position.
             Must be a positive value.
 
     Returns:
-        OrderedPair: A new OrderedPair containing the updated position 
+        OrderedPair: A new OrderedPair containing the updated position
         components (px, py).
     """
     # TODO: add code here
-    pass
+    px = b.position.x + old_vel.x * time + 0.5 * old_acc.x * (time**2)
+    py = b.position.y + old_vel.y * time + 0.5 * old_acc.y * (time**2)
+
+    return OrderedPair(px, py)
 
 def update_velocity(b: Body, old_acceleration: OrderedPair, time: float) -> OrderedPair:
     """
@@ -112,20 +120,22 @@ def update_velocity(b: Body, old_acceleration: OrderedPair, time: float) -> Orde
         v_{t+Δt} = v_t + 0.5 * (a_t + a_{t+Δt}) * Δt
 
     Args:
-        b (Body): The body whose velocity is being updated. Must have 
-            a `velocity` attribute (OrderedPair) and a current 
+        b (Body): The body whose velocity is being updated. Must have
+            a `velocity` attribute (OrderedPair) and a current
             `acceleration` attribute (OrderedPair).
-        old_acceleration (OrderedPair): The acceleration of the body at 
+        old_acceleration (OrderedPair): The acceleration of the body at
             the previous time step.
-        time (float): The time step Δt over which to update the velocity. 
+        time (float): The time step Δt over which to update the velocity.
             Must be a positive value.
 
     Returns:
-        OrderedPair: A new OrderedPair containing the updated velocity 
+        OrderedPair: A new OrderedPair containing the updated velocity
         components (vx, vy).
     """
     # TODO: add code here
-    pass
+    vx = b.velocity.x + 0.5 * (old_acceleration.x + b.acceleration.x) * time
+    vy = b.velocity.y + 0.5 * (old_acceleration.y + b.acceleration.y) * time
+    return OrderedPair(vx, vy)
 
 
 def compute_net_force(current_universe: Universe, b: Body) -> OrderedPair:
@@ -133,16 +143,24 @@ def compute_net_force(current_universe: Universe, b: Body) -> OrderedPair:
     Compute the net gravitational force on a body from all other bodies.
 
     Args:
-        current_universe (Universe): The universe containing all bodies. 
+        current_universe (Universe): The universe containing all bodies.
             Must have a list of bodies and a valid gravitational constant.
         b (Body): The body on which the net gravitational force is computed.
 
     Returns:
-        OrderedPair: A 2D vector (x, y) representing the net gravitational 
+        OrderedPair: A 2D vector (x, y) representing the net gravitational
         force acting on the given body.
     """
     # TODO: add code here
-    pass
+    net_force = OrderedPair(0.0, 0.0)
+    G = Universe.gravitational_constant
+    for current_body in current_universe.bodies:
+        #Don't compute force of b on itself
+        if not(current_body is b):
+            current_force = compute_force(b, current_body, G)
+            net_force.x += current_force.x
+            net_force.y += current_force.y
+
 
 
 def compute_force(b1: Body, b2: Body, G: float) -> OrderedPair:
@@ -155,11 +173,23 @@ def compute_force(b1: Body, b2: Body, G: float) -> OrderedPair:
         G (float): Gravitational constant.
 
     Returns:
-        OrderedPair: A 2D vector (x, y) representing the force exerted 
+        OrderedPair: A 2D vector (x, y) representing the force exerted
         on `b1` by `b2`.
     """
-    # TODO: add code here
-    pass
+    d = distance(b1.position, b2.position)
+
+    if d == 0:
+        #collision!
+        # will also handle computing force of a body acting on itself
+        return OrderedPair(0.0, 0.0)
+
+    F_magnitude = G * b1.mass * b2.mass / (d**2)
+    #what's the direction? Trigonometry
+    dx = b2.position.x - b1.position.y
+    dy = b2.position.y - b1.position.y
+    fx = F_magnitude * (dx/d)
+    fy = F_magnitude * (dy/d)
+    return OrderedPair(fx, fy)
 
 def distance(p1: OrderedPair, p2: OrderedPair) -> float:
     """
@@ -173,19 +203,19 @@ def distance(p1: OrderedPair, p2: OrderedPair) -> float:
         float: The distance between p1 and p2.
     """
     # TODO: add code here
-    pass
+    return math.sqrt((p1.x - p2.x)**2 + (p1.y - p2.y)**2)
 
 def copy_universe(current_universe: Universe) -> Universe:
     """
-    Deep-copy a Universe (bodies and width). 
+    Deep-copy a Universe (bodies and width).
     The gravitational constant `G` is a class attribute and does not need to be copied.
 
     Args:
-        current_universe (Universe): The universe to copy. Must contain 
+        current_universe (Universe): The universe to copy. Must contain
             a list of bodies and a width value.
 
     Returns:
-        Universe: A new Universe instance with deep-copied bodies and 
+        Universe: A new Universe instance with deep-copied bodies and
         the same width as the original.
     """
     # TODO: add code here
@@ -197,12 +227,12 @@ def copy_body(b: Body) -> Body:
     Deep-copy a Body, including position, velocity, and acceleration.
 
     Args:
-        b (Body): The body to copy. Must contain name, mass, radius, 
+        b (Body): The body to copy. Must contain name, mass, radius,
         position, velocity, acceleration, and color attributes.
 
     Returns:
-        Body: A new Body instance with identical properties and 
-        deep-copied OrderedPair objects for position, velocity, 
+        Body: A new Body instance with identical properties and
+        deep-copied OrderedPair objects for position, velocity,
         and acceleration.
     """
     # TODO: add code here

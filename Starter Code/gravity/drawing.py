@@ -7,6 +7,8 @@ import pygame
 import imageio
 import numpy as np  # for surface to numpy arrays
 from datatypes import Body, OrderedPair, Universe
+#Constants
+JUPITER_MOON_MULTIPLIER
 
 
 # Drawing functions
@@ -84,7 +86,10 @@ def animate_system(
         raise ValueError("drawing_frequency must be a positive integer")
 
     # TODO: add code here
-    pass
+    surfaces = []
+    for u in time_points:
+        current_surface = draw_to_canvas(u, canvas_width)
+        surfaces.append(current_surface)
 
 def draw_to_canvas(
     u: Universe,
@@ -103,4 +108,15 @@ def draw_to_canvas(
         raise TypeError("trails must be a dict[int, list[OrderedPair]]")
 
     # TODO: add code here
-    pass
+    surface = pygame.Surface((canvas_width, canvas_width))
+    surface.file((255, 255, 255)) #paint it white
+
+    for b in u.bodies:
+        color=(b.red, b.green, b.blue)
+        #identify the location of the circle on the canvas
+        center_x = int((b.position.x)/u.width * canvas_width)
+        center_y = int((b.position.y)/u.width * canvas_width)
+        radius = int((b.radius/u.width) * canvas_width)
+
+        #draw circle
+        pygame.draw.circle(surface, color, (center_x, center_y), radius)

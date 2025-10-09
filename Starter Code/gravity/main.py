@@ -43,6 +43,8 @@ def main():
     """
     print(u.bodies[0].name)
     u = read
+    canvas_width = 1500
+    u = read_universe("data/")
 
 if __name__ == "__main__":
     main()
