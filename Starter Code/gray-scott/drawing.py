@@ -1,54 +1,65 @@
-from typing import List
-from PIL import Image, ImageDraw
-import matplotlib.cm as cm
+import pygame 
+from datatypes import Board
 
+<<<<<<< HEAD
 from .datatypes import Board, Cell
+=======
+# draw_boards takes a slice of Board objects as input along with a cell_width and n parameter.
+# It returns a slice of images corresponding to drawing every nth board to a file,
+# where each cell is cell_width x cell_width pixels.
+def draw_boards(boards: list[Board], cell_width: int, n: int) -> list[pygame.Surface]:
+    image_list = []
+>>>>>>> upstream/main
 
-
-def draw_boards(boards: List[Board], cell_width: int, n: int) -> List[Image.Image]:
-    """
-    Takes a list of Board objects as input along with a cell_width and n parameter.
-    Returns a list of images corresponding to drawing every nth board,
-    where each cell is cell_width x cell_width pixels.
-    """
-    image_list: List[Image.Image] = []
+    # range over boards and if divisible by n, draw board and add to our list
     for i, board in enumerate(boards):
         if i % n == 0:
             image_list.append(draw_board(board, cell_width))
+
     return image_list
 
 
-def draw_board(board: Board, cell_width: int) -> Image.Image:
-    """
-    Draw a single Board object to an image.
-    Each cell is cell_width x cell_width pixels.
-    The color of a cell is based on predator / (predator + prey).
-    """
-    height = len(board) * cell_width
-    width = len(board[0]) * cell_width
+# draw_board takes a Board objects as input along with a cell_width parameter.
+# It returns an image corresponding to drawing every nth board to a file,
+# where each cell is cell_width x cell_width pixels.
+def draw_board(b: Board, cell_width: int) -> pygame.Surface:
+    # need to know how many pixels wide and tall to make our image
+    height = len(b) * cell_width
+    width = len(b[0]) * cell_width
 
-    # Start with a black canvas
-    img = Image.new("RGB", (width, height), "black")
-    draw = ImageDraw.Draw(img)
+    # think of a canvas as a PowerPoint slide that we draw on
+    c = pygame.Surface((width, height))
 
-    # Colormap similar to moreland.SmoothBlueRed()
-    cmap = cm.get_cmap("RdBu_r")
+    # canvas will start as black, so we should fill in colored squares
+    c.fill((0, 0, 0))
 
-    for i, row in enumerate(board):
-        for j, cell in enumerate(row):
-            prey = cell[0]
-            predator = cell[1]
+    for i in range(len(b)):
+        for j in range(len(b[i])):
+            prey = b[i][j][0]
+            predator = b[i][j][1]
 
-            val = predator / (predator + prey) if (predator + prey) > 0 else 0.0
+            # we will color each cell according to a color map.
 
-            # Convert colormap value to RGB
-            r, g, b, _ = [int(255 * x) for x in cmap(val)]
+            if predator + prey > 0:
+                val = predator / (predator + prey)
+            else:
+                val = 0.0
 
-            x0 = j * cell_width
-            y0 = i * cell_width
-            x1 = x0 + cell_width
-            y1 = y0 + cell_width
+            # we create a red-blue color gradient 
+            r = int(val * 255)
+            g = 0
+            b_col = int((1 - val) * 255)
+            color = (r, g, b_col)
 
-            draw.rectangle([x0, y0, x1, y1], fill=(r, g, b))
+            # draw a rectangle in right place with this color
+            x = i * cell_width
+            y = j * cell_width
+            rect = pygame.Rect(x, y, cell_width, cell_width)
+            pygame.draw.rect(c, color, rect)
 
+<<<<<<< HEAD
     return img
+=======
+    # canvas has an image field that we should return
+    return c
+>>>>>>> upstream/main
