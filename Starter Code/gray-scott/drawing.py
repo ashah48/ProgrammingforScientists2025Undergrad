@@ -1,15 +1,11 @@
-import pygame 
-from datatypes import Board
+import pygame
+from datatypes import Board, Cell
 
-<<<<<<< HEAD
-from .datatypes import Board, Cell
-=======
 # draw_boards takes a slice of Board objects as input along with a cell_width and n parameter.
 # It returns a slice of images corresponding to drawing every nth board to a file,
 # where each cell is cell_width x cell_width pixels.
 def draw_boards(boards: list[Board], cell_width: int, n: int) -> list[pygame.Surface]:
     image_list = []
->>>>>>> upstream/main
 
     # range over boards and if divisible by n, draw board and add to our list
     for i, board in enumerate(boards):
@@ -45,7 +41,7 @@ def draw_board(b: Board, cell_width: int) -> pygame.Surface:
             else:
                 val = 0.0
 
-            # we create a red-blue color gradient 
+            # we create a red-blue color gradient
             r = int(val * 255)
             g = 0
             b_col = int((1 - val) * 255)
@@ -57,9 +53,6 @@ def draw_board(b: Board, cell_width: int) -> pygame.Surface:
             rect = pygame.Rect(x, y, cell_width, cell_width)
             pygame.draw.rect(c, color, rect)
 
-<<<<<<< HEAD
-    return img
-=======
+
     # canvas has an image field that we should return
     return c
->>>>>>> upstream/main

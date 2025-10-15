@@ -2,13 +2,10 @@ import os
 import sys
 import pygame
 import numpy as np
-<<<<<<< HEAD
-=======
 import imageio.v2 as imageio  # imageio handles MP4 export
->>>>>>> upstream/main
 
 from datatypes import Board
-from functions import simulate_gray_scott, initialize_board
+from functions2 import simulate_gray_scott, initialize_board
 from drawing import draw_boards
 
 
@@ -19,9 +16,6 @@ def pygame_surface_to_numpy(surface: pygame.Surface) -> np.ndarray:
     Returns:
         np.ndarray: The frame as (height, width, 3) uint8 RGB.
     """
-<<<<<<< HEAD
-    return pygame.surfarray.array3d(surface).swapaxes(0,1)
-=======
     return pygame.surfarray.array3d(surface).transpose(1, 0, 2)
 
 
@@ -52,19 +46,19 @@ def main():
     # make prey = 1 everywhere
     for i in range(len(initial_board)):
         for j in range(len(initial_board[i])):
-            initial_board[r][c] = (1, initial_board[r][c][0])
+            initial_board[i][j] = (1, initial_board[i][j][0])
 
     # parameters
     num_gens = 8000
-    feed_rate = 0.034
-    kill_rate = 0.095
+    feed_rate = 0.014
+    kill_rate = 0.054
 
     # kernel for diffusion
-    kernel = np.array([
+    kernel = [
         [0.05, 0.2, 0.05],
         [0.2, -1.0, 0.2],
         [0.05, 0.2, 0.05],
-    ])
+    ]
 
     print("Starting simulation...")
     boards = simulate_gray_scott(
@@ -74,7 +68,7 @@ def main():
         kill_rate,
         prey_diffusion_rate=0.2,
         predator_diffusion_rate=0.1,
-        kernel=kernel,
+        kernel= kernel,
     )
     print("Simulation complete!")
 
@@ -104,7 +98,6 @@ def main():
 
     pygame.quit()
 
->>>>>>> upstream/main
 
 if __name__ == "__main__":
     main()
