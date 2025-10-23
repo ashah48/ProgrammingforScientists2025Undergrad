@@ -17,7 +17,12 @@ def upgma(mtx: DistanceMatrix, species_names: list[str]) -> Tree:
               Conventionally, the last node (index -1) is the root.
     """
     #TODO: Implement
-    pass
+    assert_square_matrix(mtx)
+    assert_same_number_species(mtx, species_names)
+    #Initialize the tree by creating nodes and assigning species names to the leaves
+    t = initialize_tree(species_names)
+    #clusters is a list[Node]
+    clusters = initialize_clusters(t)
 
 
 def assert_square_matrix(mtx: DistanceMatrix) -> None:
@@ -31,7 +36,12 @@ def assert_square_matrix(mtx: DistanceMatrix) -> None:
         ValueError: If the matrix is not square.
     """
     #TODO: Implement
-    pass
+    num_rows = len(mtx)
+    for r in range(num_rows):
+        if len(mtx[r]) != num_rows:
+            raise ValueError("Error: matrix not square.")
+
+
 
 
 def assert_same_number_species(mtx: DistanceMatrix, species_names: list[str]) -> None:
@@ -46,7 +56,9 @@ def assert_same_number_species(mtx: DistanceMatrix, species_names: list[str]) ->
         ValueError: If their sizes do not match.
     """
     #TODO: Implement
-    pass
+    if len(species_names) != len(mtx):
+        raise ValueError("number of rows of the matrix must be equal to the number of species")
+
 
 
 def add_row_col(row: int, col: int, cluster_size1: int, cluster_size2: int, mtx: DistanceMatrix) -> DistanceMatrix:
@@ -137,8 +149,23 @@ def initialize_tree(species_names: list[str]) -> Tree:
     Returns:
         Tree: The preallocated list of `Node` objects used by UPGMA.
     """
-    #TODO: Implement
-    pass
+    num_leaves = len(species_names)
+
+    #make our tree
+    t: Tree = []
+    #make our nodes. How many?
+    for i in range(2*num_leaves - 1):
+        v = Node(num=i)
+        t.append(v)
+
+    #we can set the labels
+    for i in range(len(t)): #or 2*num_leaves - 1
+        if i < num_leaves:
+            #at a leaf, assign it the species name
+            t[i].label = species_names[i]
+        else:
+            #ancestor
+            t[i].label = f"Ancestor Species: {i}"
 
 
 def initialize_clusters(t: Tree) -> list[Node]:
@@ -151,5 +178,9 @@ def initialize_clusters(t: Tree) -> list[Node]:
     Returns:
         list[Node]: The first n nodes of `t`, corresponding to the leaves.
     """
-    #TODO: Implement
-    pass
+    clusters: list[Node] = []
+    num_leaves = (len(t) + 1)//2
+    for i in range(num_leaves):
+        clusters.append(t[i])
+        #here's an example of an assignment being a good thing
+        # because I want one thing (a node) with two names for it.
