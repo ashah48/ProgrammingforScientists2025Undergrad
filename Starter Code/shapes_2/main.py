@@ -13,9 +13,15 @@ class Rectangle:
         x1: the x-coordinate of the rectangle's origin (float)
         y1: the y-coordinate of the rectangle's origin (float)
         rotation: rotation of shape in degrees (float)
+<<<<<<< HEAD
 
     Class Attributes:
         description: describes some characteristic of the object (string)
+=======
+    
+    Class Attributes:
+        description: describes some characteristic of the object (string) 
+>>>>>>> 97ac29c
     """
 
     description: str = "boxy"
@@ -24,11 +30,19 @@ class Rectangle:
     # Also, Python calls fields "attributes"
     # We will allow the user to set attributes of an instance the second it is born
     def __init__(self, width: float=0.0, height: float=0.0, x1: float=0, y1: float=0, rotation: float=0):
+<<<<<<< HEAD
         # let's protect the program from a bad user
         if width < 0.0 or height < 0.0:
             raise ValueError("width and height must be nonnegative.")
         # we could add tests for if variables are all floats, etc.
 
+=======
+        # let's protect the program from a bad user 
+        if width < 0.0 or height < 0.0:
+            raise ValueError("width and height must be nonnegative.")
+        # we could add tests for if variables are all floats, etc.
+        
+>>>>>>> 97ac29c
         # what attributes should every Rectangle get?
         self.width = width
         self.height = height
@@ -37,6 +51,7 @@ class Rectangle:
         self.rotation = rotation
 
     def __repr__(self) -> str:
+<<<<<<< HEAD
         # let's have a nice f string to print the attributes
         return f"Rectangle(width={self.width},height={self.height},x1={self.x1}, y1={self.y1}, rotation={self.rotation})"
 
@@ -62,13 +77,26 @@ class Circle:
     """
     Represents a 2D circle via its center and radius.
 
+=======
+        # let's have a nice f string to print the attributes 
+        return f"Rectangle(width={self.width},height={self.height},x1={self.x1}, y1={self.y1}, rotation={self.rotation})"
+
+class Circle:
+    """
+    Represents a 2D circle via its center and radius.
+    
+>>>>>>> 97ac29c
     Attributes:
         x1: the x-coordinate of the center (float)
         y1: the y-coordinate of the center (float)
         radius: the center's radius (float)
 
     Class Attributes:
+<<<<<<< HEAD
         description: describes some characteristic of the object (string)
+=======
+        description: describes some characteristic of the object (string) 
+>>>>>>> 97ac29c
     """
 
     description: str = "round"
@@ -81,6 +109,7 @@ class Circle:
         self.radius = radius
 
     def __repr__(self) -> str:
+<<<<<<< HEAD
         # let's have a nice f string to print the attributes
         return f"Circle(x1={self.x1}, y1={self.y1}, radius={self.radius})"
 
@@ -160,20 +189,37 @@ def main():
     print("r2 is:", r2)
 
 
+=======
+        # let's have a nice f string to print the attributes 
+        return f"Circle(x1={self.x1}, y1={self.y1}, radius={self.radius})"
+
+
+def main():
+    print("Shapes.")
+>>>>>>> 97ac29c
 
     # these declarations create an INSTANCE of the object with the default attributes
     x1 = 1.0
     y1 = 3.0
     radius = 2.0
     my_circle = Circle(x1, y1, radius)  # x1 = 1.0, y1 = 3.0, radius = 2.0
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> 97ac29c
     r = Rectangle(3.0, 5.0)  # some languages might get mad, Python never gets mad
     # other attributes of r get their defaults (0.0)
 
 
     """
+<<<<<<< HEAD
     # the baby is born and we can update its attributes
     my_circle.x1 = 1.0
+=======
+    # the baby is born and we can update its attributes 
+    my_circle.x1 = 1.0 
+>>>>>>> 97ac29c
     my_circle.y1 = 3.0
     my_circle.radius = 2.0
 
@@ -183,12 +229,21 @@ def main():
     r.name = "Larry"  # you can do this but don't do this
     """
 
+<<<<<<< HEAD
     # let's print the whole thing
     print("our rectangle is", r)
     print("our circle is", my_circle)
 
     # just because we initialized attributes doesn't mean we can't change them
     r.width = 2.0
+=======
+    # let's print the whole thing 
+    print("our rectangle is", r)
+    print("our circle is", my_circle)
+
+    # just because we initialized attributes doesn't mean we can't change them 
+    r.width = 2.0 
+>>>>>>> 97ac29c
     r.height = 4.5
     r.x1 = -1.45
     r.y1 = 2.3
@@ -208,16 +263,28 @@ def main():
     print("The rectangle has been translated to", r)
 
     # instances of a new class are pass by REFERENCE
+<<<<<<< HEAD
     # 1. you don't have to return the object
+=======
+    # 1. you don't have to return the object 
+>>>>>>> 97ac29c
     # 2. be CAREFUL about changing attributes of an object in a function
 
     # what we really want is just translate() functions that don't take objects as input
 
+<<<<<<< HEAD
     # we can access class attributes in two ways
     # 1. access it through an instance
     print("Our rectangle is", r.description)
 
     #2. access it via the name of the class
+=======
+    # we can access class attributes in two ways 
+    # 1. access it through an instance
+    print("Our rectangle is", r.description)
+
+    #2. access it via the name of the class 
+>>>>>>> 97ac29c
     print("Every circle is", Circle.description)
 
     my_circle.description = "orb-like"
@@ -250,8 +317,13 @@ def translate_rectangle(r: Rectangle, a: float, b:float) -> None:
     """
     Move a rectangle by a given amount in x- and y-directions.
     """
+<<<<<<< HEAD
     r.x1 += a
     r.y1 += b
+=======
+    r.x1 += a 
+    r.y1 += b 
+>>>>>>> 97ac29c
 
 def translate_circle(c: Circle, a: float, b:float) -> None:
     """
@@ -261,4 +333,8 @@ def translate_circle(c: Circle, a: float, b:float) -> None:
     c.y1 += b
 
 if __name__ == "__main__":
+<<<<<<< HEAD
     main()
+=======
+    main()
+>>>>>>> 97ac29c
