@@ -1,4 +1,5 @@
 from datatypes import Node, Tree, DistanceMatrix
+from copy import deepcopy
 
 def upgma(mtx: DistanceMatrix, species_names: list[str]) -> Tree:
     """
@@ -16,14 +17,37 @@ def upgma(mtx: DistanceMatrix, species_names: list[str]) -> Tree:
         Tree: A list of `Node` objects representing the full UPGMA tree.
               Conventionally, the last node (index -1) is the root.
     """
-    #TODO: Implement
+    # let's call our assertions
     assert_square_matrix(mtx)
     assert_same_number_species(mtx, species_names)
-    #Initialize the tree by creating nodes and assigning species names to the leaves
-    t = initialize_tree(species_names)
-    #clusters is a list[Node]
-    clusters = initialize_clusters(t)
 
+    num_leaves = len(mtx)
+    # initialize the tree by creating nodes and assigning species names to the leaves
+    t = initialize_tree(species_names)
+
+    # clusters is a list[Node]
+    clusters = initialize_clusters(t)
+    #range over all the internal nodes, and iterate one step of UPGMA algorithm
+    for p in range(num_leaves, 2*num_leaves - 1):
+        #working with t[p]
+        #find min element
+        row, col, min_val = find_min_element(mtx)
+        # set the age of t[p]
+        t[p].age = min_val/2.0
+        # set its children
+        t[p].child1 = clusters[row]
+        t[p].child2 = clusters[col]
+
+        cluster_size_1 = t[p].child1.count_leaves()
+        cluster_size_2 = t[p].child1.count_leaves()
+        # update the distance matrix
+        mtx = add_row_col(row, col, cluster_size_1, cluster_size_2, mtx)
+        mtx = delete_row_col(mtx, row, col)
+        #update the clusters
+        clusters.append(t[p])
+        clusters = delete_clusters(clusters, row, col)
+
+    return t
 
 def assert_square_matrix(mtx: DistanceMatrix) -> None:
     """
@@ -35,13 +59,12 @@ def assert_square_matrix(mtx: DistanceMatrix) -> None:
     Raises:
         ValueError: If the matrix is not square.
     """
-    #TODO: Implement
     num_rows = len(mtx)
     for r in range(num_rows):
         if len(mtx[r]) != num_rows:
             raise ValueError("Error: matrix not square.")
 
-
+    # there are lots of other things we could check about the matrix: all values non-negative, main diagonal zero, matrix symmetric, etc.
 
 
 def assert_same_number_species(mtx: DistanceMatrix, species_names: list[str]) -> None:
@@ -55,10 +78,8 @@ def assert_same_number_species(mtx: DistanceMatrix, species_names: list[str]) ->
     Raises:
         ValueError: If their sizes do not match.
     """
-    #TODO: Implement
     if len(species_names) != len(mtx):
-        raise ValueError("number of rows of the matrix must be equal to the number of species")
-
+        raise ValueError("Error: mismatched number of species and matrix rows.")
 
 
 def add_row_col(row: int, col: int, cluster_size1: int, cluster_size2: int, mtx: DistanceMatrix) -> DistanceMatrix:
@@ -79,8 +100,26 @@ def add_row_col(row: int, col: int, cluster_size1: int, cluster_size2: int, mtx:
     Returns:
         DistanceMatrix: The matrix with the new cluster appended as the last row/column.
     """
-    #TODO: Implement
-    pass
+    #create my new row that we will eventually add to the matrix
+    num_rows = len(mtx)
+    new_row = [0.0] * (num_rows+1)
+
+    #set values of the new row
+    for r in range(len(new_row)-1): #this is num_rows also
+        #set values that are not indices row and col
+        if r != row and r != col:
+            #this is WPGMA (w = weighted)
+            new_row[r] = (cluster_size1 * mtx[r][row] + cluster_size2*mtx[r][col]) / (cluster_size1 + cluster_size2)
+
+    #append new row we created to mtx
+    mtx.append(new_row)
+    #range over the rows, and append new_row[r] to row[r]
+    for r in range(len(new_row)-1):
+        mtx[r].append(new_row[r])
+
+    return mtx
+
+
 
 def delete_clusters(clusters: list[Node], row: int, col: int) -> list[Node]:
     """
@@ -96,8 +135,15 @@ def delete_clusters(clusters: list[Node], row: int, col: int) -> list[Node]:
     Returns:
         list[Node]: Updated list of cluster representatives with the two removed.
     """
-    #TODO: Implement
-    pass
+    # thank you python for having a built-in delete function
+    #Don't do this:
+    #del clusters[row]
+    #del clusters[col]
+    # when deleting multiple elements of a list, start with the one that
+    #occurs last and move back to front
+
+
+    return clusters
 
 
 def delete_row_col(mtx: DistanceMatrix, row: int, col: int) -> DistanceMatrix:
@@ -115,7 +161,17 @@ def delete_row_col(mtx: DistanceMatrix, row: int, col: int) -> DistanceMatrix:
         DistanceMatrix: The matrix with the specified rows/columns removed.
     """
     #TODO: Implement
-    pass
+
+    del mtx[col]
+    del mtx[row]
+    num_rows = len(mtx)
+    #next, delete columns
+    for r in range(num_rows):
+        del mtx[r][col]
+
+    return mtx
+
+
 
 
 def find_min_element(mtx: DistanceMatrix) -> tuple[int, int, float]:
@@ -131,9 +187,19 @@ def find_min_element(mtx: DistanceMatrix) -> tuple[int, int, float]:
     Raises:
         ValueError: If the matrix is smaller than 2x2.
     """
-    #TODO: Implement
-    pass
-
+    #range over the values of the matrix and find the minimum
+    #let's start at (0,1)
+    if len(mtx) <= 1 or len(mtx[0]) <= 1:
+        raise ValueError("Matrix has only one row or column.")
+    row = 0
+    col = 0
+    min_val = mtx[row][col]
+    #range over upper right triangle matrix values, finding the minimum
+    for i in range(len(mtx)-1):
+        for j in range(i+1, len(mtx[i])):
+            if mtx[i][j] < min_val:
+                row, col, min_val = i, j, mtx[i][j]
+    return row, col, min_val
 
 def initialize_tree(species_names: list[str]) -> Tree:
     """
@@ -151,22 +217,24 @@ def initialize_tree(species_names: list[str]) -> Tree:
     """
     num_leaves = len(species_names)
 
-    #make our tree
+    # make our tree. What's a tree? list of nodes
     t: Tree = []
-    #make our nodes. How many?
+
+    # make our nodes. How many are there?
     for i in range(2*num_leaves - 1):
         v = Node(num=i)
         t.append(v)
 
-    #we can set the labels
-    for i in range(len(t)): #or 2*num_leaves - 1
+    # we can set the labels
+    for i in range(len(t)): # or 2*num_leaves - 1
         if i < num_leaves:
-            #at a leaf, assign it the species name
+            # at a leaf, assign it the species name
             t[i].label = species_names[i]
         else:
-            #ancestor
+            # ancestor
             t[i].label = f"Ancestor Species: {i}"
 
+    return t
 
 def initialize_clusters(t: Tree) -> list[Node]:
     """
@@ -178,9 +246,15 @@ def initialize_clusters(t: Tree) -> list[Node]:
     Returns:
         list[Node]: The first n nodes of `t`, corresponding to the leaves.
     """
-    clusters: list[Node] = []
+
     num_leaves = (len(t) + 1)//2
+
+    clusters: list[Node] = []
+
     for i in range(num_leaves):
         clusters.append(t[i])
-        #here's an example of an assignment being a good thing
-        # because I want one thing (a node) with two names for it.
+        # this was what we were worried about because we're kinda doing
+        # clusters[i] = t[i]
+        # here's an example of an assignment being a good thing because I want one thing (a node) with two names for it
+
+    return clusters
