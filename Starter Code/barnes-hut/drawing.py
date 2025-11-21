@@ -1,6 +1,6 @@
 import pygame
 from datatypes import Universe
-from engine import barnes_hut_stream
+from engine import barnes_hut
 
 
 def animate_system(

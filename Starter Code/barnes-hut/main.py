@@ -55,12 +55,12 @@ def main():
     scaling_factor = 1e11  # could later also be a CLI argument if desired
     image_list = animate_system(time_points, canvas_width, frequency, scaling_factor)
 
-    output_filename = "galaxy.mp4"
+    output_filename = "galaxy2.mp4"
     fps = 30
     with imageio.get_writer(output_filename, fps=fps, codec="libx264") as writer:
         for surface in image_list:
             writer.append_data(surface_to_array(surface))
-    print("Saved video as galaxy.mp4")
+    print("Saved video as galaxy2.mp4")
 
 
 if __name__ == "__main__":

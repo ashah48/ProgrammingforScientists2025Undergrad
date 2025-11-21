@@ -2,28 +2,44 @@ import math
 from datatypes import OrderedPair, Universe, QuadTree, Node, Quadrant, Star, distance, compute_force, center_of_gravity
 from copy import deepcopy
 
+def barnes_hut(initial_universe: Universe, num_gens: int, time: float, theta: float) -> list[Universe]:
+    time_points = [initial_universe] #the list of universes with initial_universe being the first element.
+    for i in range(num_gens):
+        u = update_universe(time_points[i], time, theta)
+        time_points.append(u)
 
-def barnes_hut(
-    initial_universe: Universe,
-    num_gens: int,
-    time: float,
-    theta: float
-) -> list[Universe]:
-    # TODO: implement
-    pass
+    return time_points
 
+def update_universe(current_universe: Universe, time: float, theta: float) -> Universe:
+    """
+    Input: A Universe object initial_universe, an integer num_gens, and floats time and theta.
+    Output: A Universe object corresponding to applying one step of the Barnes-Hut simulation
+    to initial_universe, using a distance parameter of theta and a time interval equal to time.
+    """
+    new_universe = copy_universe(current_universe)
+    q = generate_quadtree(new_universe) #quadtree generated from new_universe
 
-def update_universe(
-    current_universe: Universe,
-    time: float,
-    theta: float
-) -> Universe:
-    # TODO: implement
-    pass
+    #Loop over the stars in the new_universe:
+    for star in new_universe.stars:
+        old_acc = star.acceleration
+        old_vel = star.velocity
+        star.acceleration = update_acceleration(star, q, theta)
+        star.velocity = update_velocity(star, time, old_acc)
+        star.position = update_position(star, time, old_acc, old_vel)
+
+    return new_universe
 
 def generate_quadtree(universe: Universe) -> QuadTree:
-    # TODO: implement
-    pass
+    """
+    Build a quadtree over the universe's stars, using the root sector [0, 0, width].
+    Input: A Universe object current_universe.
+    Output: A QuadTree object  quadtree, generated corresponding to current_universe.
+    """
+    t = QuadTree()
+    t.root = Node(Quadrant(0, 0, universe.width))
+    for star in universe.stars:
+        t.insert(star)
+    return t
 
 G = 6.67408e-11  # gravitational constant (you can scale this for visualization)
 
